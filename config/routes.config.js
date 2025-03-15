@@ -12,6 +12,9 @@ const stats = require("../controllers/stats.controller");
 const prototypeController = require("../controllers/prototypes.controller");
 const capturesController = require("../controllers/captures.controller");
 
+const capturesRoutes = require("./captures")
+
+router.use("/api/v1", capturesRoutes);
 router.get("/prototypes", auth.isAuthenticated, prototypes.list);
 router.post("/prototypes", auth.isAuthenticated, auth.isAdmin, prototypes.create);
 router.get("/prototypes/:id", prototypes.detail);
