@@ -10,7 +10,7 @@ const auth = require("../middlewares/session.middleware");
 const storage = require("../config/storage.config");
 const stats = require("../controllers/stats.controller");
 const prototypeController = require("../controllers/prototypes.controller");
-
+const capturesController = require("../controllers/captures.controller");
 
 router.get("/prototypes", auth.isAuthenticated, prototypes.list);
 router.post("/prototypes", auth.isAuthenticated, auth.isAdmin, prototypes.create);
@@ -23,6 +23,7 @@ router.get("/prototypes/:id/comments/:commentId",auth.isAuthenticated, prototype
 router.delete("/prototypes/:id/comments/:commentId", auth.isAuthenticated, prototypes.deleteComment);
 
 router.post("/captures", prototypes.uploadCaptureMiddleware, prototypes.uploadCapture);
+router.get("/captures", capturesController.list);
 
 router.post("/users", storage.single("avatar"), users.create);
 router.patch("/users/me", auth.isAuthenticated, users.update);
