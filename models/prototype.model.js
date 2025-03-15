@@ -19,6 +19,14 @@ const prototypeSchema = new mongoose.Schema(
       minLength: [10, "Description needs at least 3 characters"],
       maxLength: [7000, "Description characters must be lower than 7000"],
     },
+    poster: { 
+      type: String, 
+      default: "https://placehold.co/600x400",
+    }, // Mantenemos el campo de imagen original
+    screenshot: { 
+      type: String, 
+      default: null, 
+    }, // Nuevo campo opcional para la captura de pantalla
     startDate: {
       type: Date,
       required: [true, "Starting date is required"],

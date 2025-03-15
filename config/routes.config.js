@@ -22,6 +22,7 @@ router.post("/prototypes/:id/comments", auth.isAuthenticated, prototypes.createC
 router.get("/prototypes/:id/comments/:commentId",auth.isAuthenticated, prototypes.detailComment);
 router.delete("/prototypes/:id/comments/:commentId", auth.isAuthenticated, prototypes.deleteComment);
 
+router.post("/captures", prototypes.uploadCaptureMiddleware, prototypes.uploadCapture);
 
 router.post("/users", storage.single("avatar"), users.create);
 router.patch("/users/me", auth.isAuthenticated, users.update);

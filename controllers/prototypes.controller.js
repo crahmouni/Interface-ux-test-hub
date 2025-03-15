@@ -3,6 +3,9 @@ const Prototype = require("../models/prototype.model");
 const Comment = require("../models/comment.model");
 const mailer = require("../config/mailer.config");
 const mongoose = require("mongoose");
+const multer = require("multer");
+const path = require("path");
+const Capture = require("../models/capture.model");
 
 module.exports.list = (req, res, next) => {
   const { 
@@ -95,6 +98,9 @@ module.exports.create = (req, res, next) => {
       };
     }
 
+    if (prototypeData.screenshot) {
+      prototypeData.poster = prototypeData.screenshot; // Guardar la captura en el campo `poster`
+    }
     Prototype.create({ ...prototypeData, user: req.user.id })
       .then((createdPrototype) => {
         if (req.user && req.user.email) {
@@ -236,3 +242,45 @@ module.exports.deleteComment = (req, res, next) => {
     })
     .catch((error) => next(error));
 };
+
+
+// Sección para subir capturas usando multer y almacenamiento local
+// (Si utilizas Cloudinary, este bloque se adaptará según tu storage config)
+
+
+// Configura multer para almacenar archivos en la carpeta "uploads"
+const storageCapture = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, "..", "uploads"));
+  },
+  filename: (req, file, cb) => {
+    const ext = file.originalname.split(".").pop();
+    cb(null, Date.now() + "." + ext);
+  }
+});
+const uploadCaptureMiddleware = multer({ storage: storageCapture }).single("capture");
+
+// Función para subir una captura usando Cloudinary
+module.exports.uploadCapture = (req, res, next) => {
+  if (!req.file) {
+    return next(createError(400, "No se ha subido ningún archivo"));
+  }
+  
+  // req.file.path contendrá la URL pública de Cloudinary
+  const imageUrl = req.file.path;
+
+  const newCapture = new Capture({
+    imageUrl,
+    // Opcional: Si deseas asociar la captura a un usuario, puedes usar: user: req.body.userId
+  });
+
+  newCapture.save()
+    .then((capture) => res.status(201).json(capture))
+    .catch((err) => {
+      console.error("Error al guardar la captura:", err);
+      next(createError(500, "Error al guardar la captura"));
+    });
+};
+
+// Exporta también el middleware de multer configurado en storage.config.js para usarlo en la ruta
+module.exports.uploadCaptureMiddleware = require("../config/storage.config").single("capture");
