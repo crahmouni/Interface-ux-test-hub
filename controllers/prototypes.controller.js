@@ -268,9 +268,10 @@ module.exports.uploadCapture = (req, res, next) => {
   
   // req.file.path contendrá la URL pública de Cloudinary
   const imageUrl = req.file.path;
-
+  const originalUrl = req.body.originalUrl; 
   const newCapture = new Capture({
     imageUrl,
+    originalUrl,
     // Opcional: Si deseas asociar la captura a un usuario, puedes usar: user: req.body.userId
   });
 
